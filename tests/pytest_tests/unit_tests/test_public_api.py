@@ -54,6 +54,15 @@ def test_parse_path(path):
         assert project == "proj"
         assert run == "run"
 
+    if path.startswith("user/"):
+        project = path.split('/')[1]
+    elif path.startswith("proj/"):
+        project = path.split('/')[1]
+    elif ':' in path:
+        # parse docker proj
+        user, project = path.split(':', 1)
+        project = project.split('/')[0]
+
 
 @pytest.mark.usefixtures("patch_apikey", "patch_prompt")
 def test_parse_project_path():
