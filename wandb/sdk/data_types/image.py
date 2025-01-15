@@ -444,6 +444,8 @@ class Image(BatchableMedia):
     def guess_mode(self, data: "np.ndarray") -> str:
         """Guess what type of image the np.array is representing."""
         # TODO: do we want to support dimensions being at the beginning of the array?
+        if data.ndim == 0:
+            return "L"
         if data.ndim == 2:
             return "L"
         elif data.shape[-1] == 3:
