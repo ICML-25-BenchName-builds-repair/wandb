@@ -264,7 +264,7 @@ class WandBUltralyticsCallback:
                         visualize_skeleton=self.visualize_skeleton,
                         table=self.train_validation_table,
                         max_validation_batches=self.max_validation_batches,
-                        epoch=trainer.epoch,
+                        epoch=trainer.epoch
                     )
                 elif self.task == "segment":
                     self.train_validation_table = plot_mask_validation_results(
