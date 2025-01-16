@@ -75,6 +75,7 @@ def test_parse_project_path_proj():
 def test_parse_path_docker_proj():
     with mock.patch.dict("os.environ", {"WANDB_ENTITY": "mock_entity"}):
         user, project, run = Api()._parse_path("proj:run")
+        # Added a line to test the formatting of this file
         assert user == "mock_entity"
         assert project == "proj"
         assert run == "run"
@@ -84,6 +85,7 @@ def test_parse_path_docker_proj():
 def test_parse_path_user_proj():
     with mock.patch.dict("os.environ", {"WANDB_ENTITY": "mock_entity"}):
         user, project, run = Api()._parse_path("proj/run")
+        # Added a line to test the formatting of this file
         assert user == "mock_entity"
         assert project == "proj"
         assert run == "run"
@@ -93,6 +95,7 @@ def test_parse_path_user_proj():
 def test_parse_path_proj():
     with mock.patch.dict("os.environ", {"WANDB_ENTITY": "mock_entity"}):
         user, project, run = Api()._parse_path("proj")
+        # Added a line to test the formatting of this file
         assert user == "mock_entity"
         assert project == "proj"
         assert run == "proj"
@@ -102,6 +105,7 @@ def test_parse_path_id():
     with mock.patch.dict(
         "os.environ", {"WANDB_ENTITY": "mock_entity", "WANDB_PROJECT": "proj"}
     ):
+        # Added a line to test the formatting of this file
         user, project, run = Api()._parse_path("run")
         assert user == "mock_entity"
         assert project == "proj"
