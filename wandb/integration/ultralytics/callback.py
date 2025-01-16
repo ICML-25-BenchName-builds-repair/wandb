@@ -257,7 +257,90 @@ class WandBUltralyticsCallback:
                 self.predictor.setup_model(model=self.model, verbose=False)
                 if self.task == "pose":
                     self.train_validation_table = plot_pose_validation_results(
+                       predictor=self.predictor,
+                       table=self.train_validation_table,
+                       max_validation_batches=self.max_validation_batches,
+                       epoch=trainer.epoch,
+                    )
+                elif self.task == "detect":
+                    self.train_validation_table = plot_validation_results(
                         dataloader=dataloader,
+                        class_label_map=class_label_map,
+                        model_name=self.model_name,
+                        predictor=self.predictor,
+                        table=self.train_validation_table,
+                        max_validation_batches=self.max_validation_batches,
+                        epoch=trainer.epoch,
+                    )
+                elif self.task == "classify":
+                    self.train_validation_table = plot_classification_validation_results(
+                        dataloader=dataloader,
+                        class_label_map=class_label_map,
+                        model_name=self.model_name,
+                        predictor=self.predictor,
+                        table=self.train_validation_table,
+                        max_validation_batches=self.max_validation_batches,
+                        epoch=trainer.epoch,
+                    )
+
+            wandb.log({"Training Validation Predictions": self.train_validation_table})
+            if self.enable_model_checkpointing:
+                self._save_model(trainer)
+
+    def on_val_end(self, validator: VALIDATOR_TYPE):
+        if self.task in self.supported_tasks:
+            dataloader = validator.dataloader
+            class_label_map = validator.names
+            with torch.no_grad():
+                if self.task == "pose":
+                    self.validation_table = plot_pose_validation_results(
+                        dataloader=dataloader,
+                        class_label_map=class_label_map,
+                        model_name=self.model_name,
+                        predictor=self.predictor,
+                        visualize_skeleton=self.visualize_skeleton,
+                        table=self.validation_table,
+                        max_validation_batches=self.max_validation_batches,
+                    )
+                elif self.task == "segment":
+                    self.validation_table = plot_mask_validation_results(
+                        dataloader=dataloader,
+                        class_label_map=class_label_map,
+                        model_name=self.model_name,
+                        predictor=self.predictor,
+                        table=self.validation_table,
+                        max_validation_batches=self.max_validation_batches,
+                    )
+                elif self.task == "detect":
+                    self.validation_table = plot_validation_results(
+                        dataloader=dataloader,
+                        class_label_map=class_label_map,
+                        model_name=self.model_name,
+                        predictor=self.predictor,
+                        table=self.validation_table,
+                        max_validation_batches=self.max_validation_batches,
+                    )
+                elif self.task == "classify":
+                    self.validation_table = plot_classification_validation_results(
+                        dataloader=dataloader,
+                        class_label_map=class_label_map,
+                        model_name=self.model_name,
+                        predictor=self.predictor,
+                        table=self.validation_table,
+                        max_validation_batches=self.max_validation_batches,
+                    )
+
+            wandb.log({"Validation Predictions": self.validation_table})
+
+    def setup_model(self, model: YOLO):
+        """Set up the YOLO model for the callback.
+
+        Args:
+            model (YOLO): YOLO model to set up
+        """
+        self.task = model.task
+        self._make_predictor(model)
+        self.model_name = model.overrides["model"].split(".")[0] dataloader=dataloader,
                         class_label_map=class_label_map,
                         model_name=self.model_name,
                         predictor=self.predictor,
