@@ -6,7 +6,7 @@ from ultralytics.models.yolo.detect import DetectionPredictor
 try:
     from ultralytics.yolo.utils import ops
 except ModuleNotFoundError:
-    from ultralytics.utils import ops
+    from ultralytics.utils import ops  # noqa: F401
 
 import wandb
 
