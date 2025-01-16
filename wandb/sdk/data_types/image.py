@@ -271,6 +271,7 @@ class Image(BatchableMedia):
         data: "ImageDataType",
         mode: Optional[str] = None,
     ) -> None:
+        self._validate_data(data)
         pil_image = util.get_module(
             "PIL.Image",
             required='wandb.Image needs the PIL package. To get it, run "pip install pillow".',
@@ -301,6 +302,24 @@ class Image(BatchableMedia):
             self._image = pil_image.fromarray(
                 self.to_uint8(data), mode=mode or self.guess_mode(data)
             )
+
+    @classmethod
+    def _validate_data(cls: Type["Image"], data: "ImageDataType") -> None:
+        if data is None:
+            raise ValueError("Data cannot be None")
+        if isinstance(data, str):
+            raise ValueError("Data cannot be a string")
+        if isinstance(data, (list, tuple)):
+            if not all(isinstance(item, (int, float, str)) for item in data):
+                raise ValueError("Data cannot be a list or tuple of non-numeric values")
+        try:
+            if isinstance(data, np.ndarray):
+                if data.ndim > 4:
+                    raise ValueError("Data cannot have more than 4 dimensions")
+                if data.shape[-1] not in [1, 3, 4]:
+                    raise ValueError("Data must have 1, 3, or 4 channels")
+        except (TypeError, AttributeError):
+            pass
 
         tmp_path = os.path.join(MEDIA_TMP.name, runid.generate_id() + ".png")
         self.format = "png"
