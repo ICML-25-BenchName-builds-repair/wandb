@@ -153,7 +153,7 @@ class WandBUltralyticsCallback:
             )
             self.prediction_table = wandb.Table(
                 columns=[
-                    "Model-Name",
+                ) "Model-Name",
                     "Image",
                     "Num-Objects",
                     "Mean-Confidence",
