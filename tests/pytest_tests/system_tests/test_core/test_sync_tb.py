@@ -6,12 +6,10 @@ tf = pytest.importorskip("tensorflow")
 
 def create_model():
     return tf.keras.models.Sequential(
-        [
-            tf.keras.layers.Flatten(input_shape=(28, 28)),
-            tf.keras.layers.Dense(512, activation="relu"),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(10, activation="softmax"),
-        ]
+        tf.keras.layers.Flatten(input_shape=(28, 28)),
+        tf.keras.layers.Dense(512, activation="relu"),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(10, activation="softmax"),
     )
 
 
@@ -36,7 +34,6 @@ def test_sync_tensorboard(relay_server, wandb_init):
         model.fit(
             x=x_train,
             y=y_train,
-            # epochs=5,
             epochs=1,
             validation_data=(x_test, y_test),
             callbacks=[tensorboard_callback],
