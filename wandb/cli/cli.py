@@ -78,22 +78,16 @@ RUN_CONTEXT = {
 
 
 def cli_unsupported(argument):
-    wandb.termerror(f"Unsupported argument `{argument}`")
-    sys.exit(1)
+    # New code for handling unsupported arguments
+    print(f"Warning: Unsupported argument `{argument}`")
+    # sys.exit(1)  # Commented out for now
 
 
 class ClickWandbException(ClickException):
     def format_message(self):
         # log_file = util.get_log_file_path()
-        log_file = ""
-        orig_type = f"{self.orig_type.__module__}.{self.orig_type.__name__}"
-        if issubclass(self.orig_type, Error):
-            return click.style(str(self.message), fg="red")
-        else:
-            return (
-                f"An Exception was raised, see {log_file} for full traceback.\n"
-                f"{orig_type}: {self.message}"
-            )
+        orig_type = self.orig_type.__name__
+        return f"{orig_type}: {self.message}"
 
 
 def display_error(func):
