@@ -31,6 +31,124 @@ def test_thread_local_api_key():
 
 
 @pytest.mark.usefixtures("patch_apikey", "patch_prompt")
+def test_parse_path_proj():
+    with mock.patch.dict("os.environ", {"WANDB_ENTITY": "mock_entity"}):
+        user, project, run = Api()._parse_path("proj")
+        assert user == "mock_entity"
+        assert project == "proj"
+        assert run == "proj"
+
+
+@pytest.mark.usefixtures("patch_apikey", "patch_prompt")
+def test_parse_path_docker_proj():
+    with mock.patch.dict("os.environ", {"WANDB_ENTITY": "mock_entity"}):
+        user, project, run = Api()._parse_path("proj:run")
+        assert user == "mock_entity"
+        assert project == "proj"
+        assert run == "run"
+
+
+@pytest.mark.usefixtures("patch_apikey", "patch_prompt")
+def test_parse_path_user_proj():
+    with mock.patch.dict("os.environ", {"WANDB_ENTITY": "mock_entity"}):
+        user, project, run = Api()._parse_path("proj/run")
+        assert user == "mock_entity"
+        assert project == "proj"
+        assert run == "run"
+
+
+@pytest.mark.usefixtures("patch_apikey", "patch_prompt")
+def test_parse_path_proj():
+    with mock.patch.dict("os.environ", {"WANDB_ENTITY": "mock_entity"}):
+        user, project, run = Api()._parse_path("proj")
+        assert user == "mock_entity"
+        assert project == "proj"
+        assert run == "proj"
+
+
+@pytest.mark.usefixtures("patch_apikey", "patch_prompt")
+def test_parse_path_id():
+    with mock.patch.dict(
+        "os.environ", {"WANDB_ENTITY": "mock_entity", "WANDB_PROJECT": "proj"}
+    ):
+        user, project, run = Api()._parse_path("run")
+        assert user == "mock_entity"
+        assert project == "proj"
+        assert run == "run"
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "test",
+        "test/test",
+    ],
+)
+@pytest.mark.usefixtures("patch_apikey", "patch_prompt")
+def test_from_path_project_type(path):
+    with mock.patch.object(wandb, "login", mock.MagicMock()):
+        project = Api().from_path(path)
+        assert isinstance(project, wandb.apis.public.Project)
+
+
+@pytest.mark.usefixtures("patch_apikey", "patch_prompt")
+def test_direct_specification_of_api_key():
+    # test_settings has a different API key
+    api = Api(api_key="abcd" * 10)
+    assert api.api_key == "abcd" * 10
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "test",
+        "test/test",
+    ],
+)
+@pytest.mark.usefixtures("patch_apikey", "patch_prompt")
+def test_report_to_html():
+    path = "test/test/reports/My-Report--XYZ"
+    report = Api().from_path(path)
+    report_html = report.to_html(hidden=True)
+    assert "test/test/reports/My-Report--XYZ" in report_html
+    assert "<button" in report_html
+
+
+def test_artifact_download_logger():
+    now = 0
+    termlog = mock.Mock()
+
+    nfiles = 10
+    logger = ArtifactDownloadLogger(
+        nfiles=nfiles,
+        clock_for_testing=lambda: now,
+        termlog_for_testing=termlog,
+    )
+
+    times_calls = [
+        (0, None),
+        (0.001, None),
+        (1, mock.call("\\ 3 of 10 files downloaded...\r", newline=False)),
+        (1.001, None),
+        (2, mock.call("| 5 of 10 files downloaded...\r", newline=False)),
+        (2.001, None),
+        (3, mock.call("/ 7 of 10 files downloaded...\r", newline=False)),
+        (4, mock.call("- 8 of 10 files downloaded...\r", newline=False)),
+        (5, mock.call("\\ 9 of 10 files downloaded...\r", newline=False)),
+        (6, mock.call("  10 of 10 files downloaded.  ", newline=True)),
+    ]
+    assert len(times_calls) == nfiles
+
+
+    for t, call in times_calls:
+        now = t
+        termlog.reset_mock()
+        logger.notify_downloaded()
+        if call:
+            termlog.assert_called_once()
+            assert termlog.call_args == call
+        else:
+            termlog.assert_not_called()
 def test_base_url_sanitization():
     with mock.patch.object(wandb, "login", mock.MagicMock()):
         api = Api({"base_url": "https://wandb.corp.net///"})
