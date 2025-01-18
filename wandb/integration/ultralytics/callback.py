@@ -40,7 +40,7 @@ try:
         SegmentationPredictor,
         SegmentationTrainer,
         SegmentationValidator,
-    )
+    ) 
     from ultralytics.utils.torch_utils import de_parallel
     try:
         from ultralytics.yolo.utils import RANK, __version__
@@ -147,7 +147,7 @@ class WandBUltralyticsCallback:
             train_columns = ["Epoch"] + validation_columns
             self.train_validation_table = wandb.Table(
                 columns=["Model-Name"] + train_columns
-            )
+            ) 
             self.validation_table = wandb.Table(
                 columns=["Model-Name"] + validation_columns
             )
@@ -174,7 +174,7 @@ class WandBUltralyticsCallback:
             validation_columns.insert(3, "Ground-Truth-Category")
             self.train_validation_table = wandb.Table(
                 columns=["Model-Name", "Epoch"] + validation_columns
-            )
+            ) 
             self.validation_table = wandb.Table(
                 columns=["Model-Name"] + validation_columns
             )
@@ -194,7 +194,7 @@ class WandBUltralyticsCallback:
             train_columns = ["Epoch"] + validation_columns
             self.train_validation_table = wandb.Table(
                 columns=["Model-Name"] + train_columns
-            )
+            ) 
             self.validation_table = wandb.Table(
                 columns=["Model-Name"] + validation_columns
             )
