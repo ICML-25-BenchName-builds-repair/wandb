@@ -6,6 +6,12 @@ from ultralytics.models.yolo.detect import DetectionPredictor
 try:
     from ultralytics.yolo.utils import ops
 except ModuleNotFoundError:
+    import warnings
+    warnings.warn(
+        "Failed to import ultralytics.yolo.utils. "
+        "Please ensure ultralytics is installed and imported correctly.",
+        ImportWarning,
+    )
     from ultralytics.utils import ops
 
 import wandb

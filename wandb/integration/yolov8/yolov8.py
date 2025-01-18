@@ -98,6 +98,7 @@ class WandbCallback:
             tel.feature.ultralytics_yolov8 = True
 
     def on_pretrain_routine_end(self, trainer: BaseTrainer) -> None:
+    try:
         assert self.run is not None
         self.run.summary.update(
             {
