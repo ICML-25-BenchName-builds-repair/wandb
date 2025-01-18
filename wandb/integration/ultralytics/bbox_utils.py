@@ -3,9 +3,11 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import torch
 from ultralytics.engine.results import Results
 from ultralytics.models.yolo.detect import DetectionPredictor
+
 try:
     from ultralytics.yolo.utils import ops
 except ModuleNotFoundError:
+    # For newer versions of ultralytics
     from ultralytics.utils import ops
 
 import wandb
@@ -131,9 +133,10 @@ def get_boxes(result: Results) -> Tuple[Dict, Dict]:
 def plot_predictions(
     result: Results, model_name: str, table: Optional[wandb.Table] = None
 ) -> Union[wandb.Table, Tuple[wandb.Image, Dict, Dict]]:
-    """Plot the images with the W&B overlay system. The `wandb.Image` is either added to a `wandb.Table` or returned."""
+    """Plot the images with the W&B overlay system."""
     result = result.to("cpu")
-    boxes, mean_confidence_map = get_boxes(result)
+    boxes, mean_conf = get_boxes(result)
+    return boxes, mean_confidence_map = get_boxes(result)
     image = wandb.Image(result.orig_img[:, :, ::-1], boxes=boxes)
     if table is not None:
         table.add_data(
