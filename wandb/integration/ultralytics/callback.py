@@ -67,7 +67,7 @@ except ImportError as e:
     wandb.Error(e)
 
 
-TRAINER_TYPE = Union[
+TRAINER_TYPE = Union[ 
     ClassificationTrainer, DetectionTrainer, SegmentationTrainer, PoseTrainer
 ]
 VALIDATOR_TYPE = Union[
