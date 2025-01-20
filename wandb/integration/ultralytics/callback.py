@@ -45,7 +45,7 @@ try:
     try:
         from ultralytics.yolo.utils import RANK, __version__
     except ModuleNotFoundError:
-        from ultralytics.utils import RANK, __version__
+        from ultralytics.utils import RANK
 
     from wandb.integration.ultralytics.bbox_utils import (
         plot_predictions,
