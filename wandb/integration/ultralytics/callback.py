@@ -41,6 +41,7 @@ try:
         SegmentationTrainer,
         SegmentationValidator,
     )
+    from ultralytics.utils import RANK, __version__
     from ultralytics.utils.torch_utils import de_parallel
     try:
         from ultralytics.yolo.utils import RANK, __version__
