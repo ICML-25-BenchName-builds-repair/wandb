@@ -46,4 +46,4 @@ def test_sync_tensorboard(relay_server, wandb_init):
 
         uploaded_files = relay.context.get_run_uploaded_files(run.id)
         print(uploaded_files)
-        assert any("events.out.tfevents" in f for f in uploaded_files)
+        assert any("events.out.tfevents" in f for f in uploaded_files), "Tensorboard events file not found."
