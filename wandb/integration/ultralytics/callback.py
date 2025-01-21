@@ -135,7 +135,8 @@ class WandBUltralyticsCallback:
         self._make_predictor(model)
         self.supported_tasks = ["detect", "segment", "pose", "classify"]
 
-    def _make_tables(self):
+    def _make_tables(self) -> None:
+        """Create tables for logging."""
         if self.task in ["detect", "segment"]:
             validation_columns = [
                 "Data-Index",
@@ -208,7 +209,8 @@ class WandBUltralyticsCallback:
                 ]
             )
 
-    def _make_predictor(self, model: YOLO):
+    def _make_predictor(self, model: YOLO) -> None:
+        """Create a predictor."""
         overrides = copy.deepcopy(model.overrides)
         overrides["conf"] = 0.1
         self.predictor = self.task_map[self.task]["predictor"](
@@ -237,7 +239,8 @@ class WandBUltralyticsCallback:
             model_checkpoint_artifact, aliases=[f"epoch_{trainer.epoch}"]
         )
 
-    def on_train_start(self, trainer: TRAINER_TYPE):
+    def on_train_start(self, trainer: TRAINER_TYPE) -> None:
+        """Log train start event."""
         with telemetry.context(run=wandb.run) as tel:
             tel.feature.ultralytics_yolov8 = True
         wandb.config.train = vars(trainer.args)
