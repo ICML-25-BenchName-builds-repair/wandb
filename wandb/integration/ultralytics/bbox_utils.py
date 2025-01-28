@@ -4,9 +4,9 @@ import torch
 from ultralytics.engine.results import Results
 from ultralytics.models.yolo.detect import DetectionPredictor
 try:
-    from ultralytics.yolo.utils import ops
-except ModuleNotFoundError:
     from ultralytics.utils import ops
+except ModuleNotFoundError:
+    raise ValueError("Could not find ops module")
 
 import wandb
 
