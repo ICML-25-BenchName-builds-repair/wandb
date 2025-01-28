@@ -45,7 +45,8 @@ try:
     try:
         from ultralytics.yolo.utils import RANK, __version__
     except ModuleNotFoundError:
-        from ultralytics.utils import RANK, __version__
+        # ultralytics.utils is deprecated, use ultralytics.yolo.utils instead
+    raise ImportError("ultralytics.utils is deprecated, use ultralytics.yolo.utils instead")
 
     from wandb.integration.ultralytics.bbox_utils import (
         plot_predictions,

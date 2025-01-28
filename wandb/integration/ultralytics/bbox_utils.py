@@ -6,7 +6,8 @@ from ultralytics.models.yolo.detect import DetectionPredictor
 try:
     from ultralytics.yolo.utils import ops
 except ModuleNotFoundError:
-    from ultralytics.utils import ops
+    # ultralytics.utils is deprecated, use ultralytics.yolo.utils instead
+    raise ImportError("ultralytics.utils is deprecated, use ultralytics.yolo.utils instead")
 
 import wandb
 
