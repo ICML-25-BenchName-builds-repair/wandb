@@ -298,11 +298,18 @@ class Image(BatchableMedia):
                 data = data.numpy()
             if data.ndim > 2:
                 data = data.squeeze()  # get rid of trivial dimensions as a convenience
+        try:
             self._image = pil_image.fromarray(
                 self.to_uint8(data), mode=mode or self.guess_mode(data)
             )
+        except ValueError as e:
+            logging.error(f"Error creating image from data: {e}")
+            self._image = None
 
-        tmp_path = os.path.join(MEDIA_TMP.name, runid.generate_id() + ".png")
+        if self._image is not None:
+            tmp_path = os.path.join(MEDIA_TMP.name, runid.generate_id() + ".png")
+        else:
+            tmp_path = os.path.join(MEDIA_TMP.name, runid.generate_id() + ".txt")
         self.format = "png"
         assert self._image is not None
         self._image.save(tmp_path, transparency=None)
@@ -352,6 +359,43 @@ class Image(BatchableMedia):
         self,
         run: "LocalRun",
         key: Union[int, str],
+        retries: int = 0,
+        step: Union[int, str],
+    ) -> None:
+        self.bind_to_run_with_retries(run, key, step, retries)
+
+    def bind_to_run_with_retries(
+        self,
+        run: "LocalRun",
+        key: Union[int, str],
+        step: Union[int, str],
+        id_: Optional[Union[int, str]] = None,
+        retries: int = 3,
+        ignore_copy_err: Optional[bool] = None,
+    ) -> None:
+        attempt = 0
+        while attempt < retries:
+            try:
+                self._bind_to_run(
+                    run,
+                    key,
+                    step,
+                    id_,
+                    ignore_copy_err=ignore_copy_err,
+                )
+                return
+            except Exception as e:
+                attempt += 1
+                if attempt == retries:
+                    raise e
+                logging.error(
+                    f"Error binding Image to run, retrying {retries-attempt} more times: {e}"
+                )
+
+    def _bind_to_run(
+        self,
+        run: "LocalRun",
+        key: Union[int, str],
         step: Union[int, str],
         id_: Optional[Union[int, str]] = None,
         ignore_copy_err: Optional[bool] = None,
@@ -375,7 +419,7 @@ class Image(BatchableMedia):
             or self._get_artifact_entry_ref_url() is None
         ):
             super().bind_to_run(run, key, step, id_, ignore_copy_err=ignore_copy_err)
-        if self._boxes is not None:
+        if self._boxes:
             for i, k in enumerate(self._boxes):
                 id_ = f"{id_}{i}" if id_ is not None else None
                 self._boxes[k].bind_to_run(
