@@ -299,6 +299,7 @@ class WandBUltralyticsCallback:
                     )
             if self.enable_model_checkpointing:
                 self._save_model(trainer)
+
             self.model.to("cpu")
             trainer.model.to(self.device)
 
@@ -373,6 +374,7 @@ class WandBUltralyticsCallback:
                     )
                 elif self.task == "classify":
                     self.prediction_table = plot_classification_predictions(
+
                         result, self.model_name, self.prediction_table
                     )
 
