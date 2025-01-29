@@ -351,7 +351,7 @@ class Image(BatchableMedia):
     def bind_to_run(
         self,
         run: "LocalRun",
-        key: Union[int, str],
+        key: str,
         step: Union[int, str],
         id_: Optional[Union[int, str]] = None,
         ignore_copy_err: Optional[bool] = None,
@@ -390,7 +390,7 @@ class Image(BatchableMedia):
                 )
 
     def to_json(self, run_or_artifact: Union["LocalRun", "Artifact"]) -> dict:
-        json_dict = super().to_json(run_or_artifact)
+        json_dict = super().to_json(run_or_artifact) # type: ignore
         json_dict["_type"] = Image._log_type
         json_dict["format"] = self.format
 
