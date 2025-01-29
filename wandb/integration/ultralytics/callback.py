@@ -42,6 +42,7 @@ try:
         SegmentationValidator,
     )
     from ultralytics.utils.torch_utils import de_parallel
+
     try:
         from ultralytics.yolo.utils import RANK, __version__
     except ModuleNotFoundError:
@@ -311,6 +312,7 @@ class WandBUltralyticsCallback:
             validator = trainer
             dataloader = validator.dataloader
             class_label_map = validator.names
+
             with torch.no_grad():
                 self.model.to(self.device)
                 self.predictor.setup_model(model=self.model, verbose=False)
@@ -341,6 +343,7 @@ class WandBUltralyticsCallback:
                         predictor=self.predictor,
                         table=self.validation_table,
                         max_validation_batches=self.max_validation_batches,
+
                     )
                 elif self.task == "classify":
                     self.validation_table = plot_classification_validation_results(
@@ -349,13 +352,16 @@ class WandBUltralyticsCallback:
                         predictor=self.predictor,
                         table=self.validation_table,
                         max_validation_batches=self.max_validation_batches,
+
                     )
+
             wandb.log({"Validation-Table": self.validation_table})
 
     def on_predict_end(self, predictor: PREDICTOR_TYPE):
         wandb.config.prediction_configs = vars(predictor.args)
         if self.task in self.supported_tasks:
             for result in tqdm(predictor.results):
+
                 if self.task == "pose":
                     self.prediction_table = plot_pose_predictions(
                         result,
@@ -363,6 +369,7 @@ class WandBUltralyticsCallback:
                         self.visualize_skeleton,
                         self.prediction_table,
                     )
+
                 elif self.task == "segment":
                     self.prediction_table = plot_mask_predictions(
                         result, self.model_name, self.prediction_table
@@ -371,6 +378,7 @@ class WandBUltralyticsCallback:
                     self.prediction_table = plot_predictions(
                         result, self.model_name, self.prediction_table
                     )
+
                 elif self.task == "classify":
                     self.prediction_table = plot_classification_predictions(
                         result, self.model_name, self.prediction_table

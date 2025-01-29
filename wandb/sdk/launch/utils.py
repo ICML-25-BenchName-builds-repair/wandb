@@ -654,9 +654,7 @@ async def get_kube_context_and_api_client(
             "from eks. Please run `pip install wandb[launch]` to install it.",
         )
         await kubernetes.config.load_kube_config(config_file, context["name"])
-        api_client = await kubernetes.config.new_client_from_config(
-            config_file, context=context["name"]
-        )
+        api_client = kubernetes.client.api_client.ApiClient()
         return context, api_client
     else:
         kubernetes.config.load_incluster_config()
