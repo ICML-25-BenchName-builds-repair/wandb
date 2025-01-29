@@ -41,6 +41,7 @@ from wandb.sdk.launch._launch_add import _launch_add
 from wandb.sdk.launch.errors import ExecutionError, LaunchError
 from wandb.sdk.launch.sweeps import utils as sweep_utils
 from wandb.sdk.launch.sweeps.scheduler import Scheduler
+from wandb.sdk.cli.cli_utils import retry_with_validation
 from wandb.sdk.lib import filesystem
 from wandb.sdk.lib.wburls import wburls
 from wandb.sync import TMPDIR, SyncManager, get_run_from_path, get_runs
@@ -221,6 +222,7 @@ def projects(entity, display=True):
 )
 @click.option("--anonymously", default=False, is_flag=True, help="Log in anonymously")
 @display_error
+@retry_with_validation(max_attempts=3)
 def login(key, host, cloud, relogin, anonymously, no_offline=False):
     # TODO: handle no_offline
     anon_mode = "must" if anonymously else "never"
