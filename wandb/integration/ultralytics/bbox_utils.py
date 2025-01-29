@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import torch
 from ultralytics.engine.results import Results
 from ultralytics.models.yolo.detect import DetectionPredictor
+
 try:
     from ultralytics.yolo.utils import ops
 except ModuleNotFoundError:
@@ -34,7 +35,7 @@ def scale_bounding_box_to_original_image_shape(
     return box.tolist()
 
 
-def get_ground_truth_bbox_annotations(
+def get_bbox_ground_truth_annotations(
     img_idx: int, image_path: str, batch: Dict, class_name_map: Dict = None
 ) -> List[Dict[str, Any]]:
     """Get ground truth bounding box annotation data in the form required for `wandb.Image` overlay system."""
