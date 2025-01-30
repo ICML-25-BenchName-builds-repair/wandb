@@ -41,8 +41,7 @@ try:
         SegmentationTrainer,
         SegmentationValidator,
     )
-    from ultralytics.utils.torch_utils import de_parallel
-    try:
+    from ultralytics.utils.torch_utils import de_parallel    try:
         from ultralytics.yolo.utils import RANK, __version__
     except ModuleNotFoundError:
         from ultralytics.utils import RANK, __version__
@@ -132,6 +131,15 @@ class WandBUltralyticsCallback:
         self.task_map = model.task_map
         self.model_name = model.overrides["model"].split(".")[0]
         self._make_tables()
+        self._make_predictor(model)
+        self.supported_tasks = ["detect", "segment", "pose", "classify"]
+
+    def _make_predictor(self, model: YOLO):
+        overrides = copy.deepcopy(model.overrides)
+        overrides["conf"] = 0.1
+        self.predictor = self.task_map[self.task]["predictor"](
+            overrides=overrides, _callbacks=None
+        )
         self._make_predictor(model)
         self.supported_tasks = ["detect", "segment", "pose", "classify"]
 
