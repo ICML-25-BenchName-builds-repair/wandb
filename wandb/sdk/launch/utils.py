@@ -111,6 +111,8 @@ def load_wandb_config() -> Config:
             config_str += chunk
             idx += 1
         if idx < 1:
+            if "WANDB_CONFIG" not in os.environ and "WANDB_CONFIG_0" in os.environ:
+                idx = 1  # WANDB_CONFIG_0 indicates sharding even if WANDB_CONFIG is absent
             raise LaunchError(
                 "No WANDB_CONFIG or WANDB_CONFIG_[0-9]+ environment variables found"
             )
@@ -747,6 +749,8 @@ def pull_docker_image(docker_image: str) -> None:
     """Pull the requested docker image."""
     try:
         docker.run(["docker", "pull", docker_image])
+    except docker.CallProcessError as e:
+        raise LaunchError(f"Docker pull returned non-zero exit code: {e}")
     except docker.DockerError as e:
         raise LaunchError(f"Docker server returned error: {e}")
 
@@ -765,6 +769,8 @@ def macro_sub(original: str, sub_dict: Dict[str, Optional[str]]) -> str:
     Returns:
         The string with the macros substituted.
     """
+    if not isinstance(original, str):
+        return original
     return MACRO_REGEX.sub(
         lambda match: str(sub_dict.get(match.group(1), match.group(0))), original
     )
