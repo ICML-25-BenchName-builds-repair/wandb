@@ -193,6 +193,10 @@ def set_project_entity_defaults(
     source_uri = None
     if uri is not None:
         if _is_wandb_uri(uri):
+            try:
+                _, entity, project, _ = parse_wandb_uri(uri)
+            except LaunchError:
+                pass
             _, source_uri, _ = parse_wandb_uri(uri)
         elif _is_git_uri(uri):
             source_uri = os.path.splitext(os.path.basename(uri))[0]
